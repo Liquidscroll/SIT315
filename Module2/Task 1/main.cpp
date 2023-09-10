@@ -69,7 +69,7 @@ int main() {
     std::vector<testResults> results;
 
     // Test matrix multiplication for different matrix sizes
-    for(uint64_t minSize = size; minSize > 0; minSize -= 100) {
+    for(uint64_t minSize = size; minSize > 0; minSize -= 1000) {
         std::cout << "Testing size: " << minSize << std::endl;
 
         // Sequential test

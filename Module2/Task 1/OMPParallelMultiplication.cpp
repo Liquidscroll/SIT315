@@ -1,7 +1,3 @@
-//
-// Created by mandi on 14/08/2023.
-//
-
 #include "OMPParallelMultiplication.h"
 
 #include <random>
@@ -43,11 +39,14 @@ namespace OMPParallelMultiplication
      * @param high: Upper bound for random values.
      */
     void randomMatrix(uint64_t **matrix, const uint64_t size,
-                      int low, int high)
+                      int low, int high, int numThreads)
     {
+
         std::random_device rd;
         std::mt19937 rng(rd());
         std::uniform_int_distribution<int> dist(low, high);
+
+    #pragma omp parallel for default(none) firstprivate (matrix, size, dist, rng) num_threads(numThreads)
         for(uint64_t i = 0; i < size; i++) {
             for(uint64_t j = 0; j < size; j++) {
                 matrix[i][j] = dist(rng);
@@ -123,8 +122,8 @@ namespace OMPParallelMultiplication
         v3 = initArray(size) ;
 
         // Fill matrices with random values
-        randomMatrix(v1, size, 1, 10);
-        randomMatrix(v2, size, 1, 10);
+        randomMatrix(v1, size, 1, 10, numThreads);
+        randomMatrix(v2, size, 1, 10, numThreads);
 
         // Perform matrix multiplication using OpenMP and measure the time taken
         auto start = std::chrono::high_resolution_clock::now();

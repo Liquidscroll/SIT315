@@ -1,7 +1,3 @@
-//
-// Created by mandi on 14/08/2023.
-//
-
 #include "ParallelMultiplication.h"
 
 #include <random>
@@ -41,17 +37,40 @@ namespace ParallelMultiplication
      * @param low: Lower bound for random values.
      * @param high: Upper bound for random values.
      */
-    void randomMatrix(uint64_t **matrix, const uint64_t size,
-                      int low, int high)
+    void randomMatrix(uint64_t **matrix, const uint64_t size, int low, int high, int numThreads)
     {
         std::random_device rd;
         std::mt19937 rng(rd());
         std::uniform_int_distribution<int> dist(low, high);
-        for(uint64_t i = 0; i < size; i++) {
-            for(uint64_t j = 0; j < size; j++) {
-                matrix[i][j] = dist(rng);
+
+        // Calculate the number of rows each thread should handle
+        uint64_t rowsPerThread = size / numThreads;
+
+        /**
+         * A lambda function to populate a specified range of rows (from startRow to endRow)
+         * in the matrix with random values.
+         *
+         * @param startRow: The starting row index (inclusive) for element population.
+         * @param endRow: The ending row index (exclusive) for element population.
+         */
+        auto populateRows = [&](uint64_t startRow, uint64_t endRow) {
+            for(uint64_t i = startRow; i < endRow; i++) {
+                for(uint64_t j = 0; j < size; j++) {
+                    matrix[i][j] = dist(rng);
+                }
             }
+        };
+
+        std::vector<std::thread> randomThreads;
+        for(int th = 0; th < numThreads; th++) {
+            uint64_t startRow = th * rowsPerThread;
+            // If we're at the last thread let it handle the rest
+            // of the array, no matter the size.
+            uint64_t endRow = (th == numThreads - 1) ? size : startRow + rowsPerThread;
+            randomThreads.emplace_back(populateRows, startRow, endRow);
         }
+
+        for(auto& t : randomThreads) { t.join(); }
     }
 
     /**
@@ -110,8 +129,9 @@ namespace ParallelMultiplication
         v3 = initArray(size) ;
 
         // Fill matrices with random values
-        randomMatrix( v1, size, 1, 10);
-        randomMatrix(v2, size, 1, 10);
+        randomMatrix(v1, size, 1, 10, numThreads/2);
+        randomMatrix(v2, size, 1, 10, numThreads/2);
+
 
         // Perform matrix multiplication and measure the time taken
         auto start = std::chrono::high_resolution_clock::now();
