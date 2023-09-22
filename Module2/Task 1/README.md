@@ -1,6 +1,6 @@
 ### Matrix Multiplication
 
-Run using the command:
+Build using the command:
 
 ```
 g++ -fopenmp main.cpp OMPParallelMultiplication.cpp ParallelMultiplication.cpp SequentialMultiplication.cpp -o MatrixMulti.exe

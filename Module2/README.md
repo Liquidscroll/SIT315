@@ -9,3 +9,8 @@ Matrix multiplication implemented:
 	- OMP Static Scheduling
 	- OMP Dynamic Scheduling
 	- OMP Guided Scheduling
+	
+#### Task 2
+Quicksort implemented with tail recursion:
+- Sequentially
+- In parallel using Open_MP
