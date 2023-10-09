@@ -1,4 +1,4 @@
-### SIT315 - Module 1
+### SIT315 - Module 2
 
 #### Task 1
 Matrix multiplication implemented:
